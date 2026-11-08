@@ -1,0 +1,12 @@
+{
+  "name": "apple-style-ui-skill",
+  "owner": { "name": "Aduhax16" },
+  "description": "A Claude skill that makes any interface look like Apple designed it.",
+  "plugins": [
+    {
+      "name": "apple-style-ui",
+      "source": "./plugins/apple-style-ui",
+      "description": "Apple-style UI design system and workflow for web, iOS, macOS, Flutter and React Native."
+    }
+  ]
+}

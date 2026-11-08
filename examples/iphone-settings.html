@@ -1,0 +1,991 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Pulse Settings</title>
+<style>
+/* ==========================================================================
+   Tokens (apple-style-ui/assets/tokens.css, trimmed to what this screen uses)
+   ========================================================================== */
+:root {
+  color-scheme: light dark;
+  --font-text: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
+
+  --text-large-title: 2.125rem;
+  --text-title2: 1.375rem;
+  --text-headline: 1.0625rem;
+  --text-body: 1.0625rem;
+  --text-subheadline: 0.9375rem;
+  --text-footnote: 0.8125rem;
+  --text-caption2: 0.6875rem;
+
+  --tracking-title: -0.012em;
+  --tracking-body: -0.006em;
+  --leading-body: 1.47;
+
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+  --touch-min: 44px;
+
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 18px; --radius-xl: 28px; --radius-pill: 980px;
+
+  --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
+  --spring-smooth: linear(0, 0.157, 0.438, 0.66, 0.808, 0.897, 0.947, 0.974, 0.988, 0.995, 1);
+  --spring-snappy: linear(0, 0.245, 0.621, 0.885, 1.02, 1.062, 1.054, 1.031, 1.012, 1.001, 0.997, 1);
+  --dur-fast: 160ms; --dur-base: 260ms; --dur-slow: 420ms;
+
+  --blue: #007aff; --green: #34c759; --indigo: #5856d6; --orange: #ff9500;
+  --pink: #ff2d55; --purple: #af52de; --red: #ff3b30; --teal: #30b0c7;
+  --cyan: #32ade6; --yellow: #ffcc00;
+  --gray: #8e8e93; --gray2: #aeaeb2;
+
+  /* Pulse owns one color: pink. Everything else stays neutral. */
+  --accent: var(--pink);
+  --accent-text: #d30f45;            /* AA-safe pink for text on white */
+  --accent-tint: rgb(255 45 85 / 0.12);
+  --on-accent: #ffffff;
+
+  --label: #000000;
+  --label-secondary: rgb(60 60 67 / 0.72);
+  --label-tertiary: rgb(60 60 67 / 0.45);
+
+  --bg-grouped: #f2f2f7;
+  --bg-grouped-secondary: #ffffff;
+  --bg-elevated: #ffffff;
+
+  --fill: rgb(120 120 128 / 0.2);
+  --fill-secondary: rgb(120 120 128 / 0.16);
+  --fill-tertiary: rgb(118 118 128 / 0.12);
+  --fill-quaternary: rgb(116 116 128 / 0.08);
+  --separator: rgb(60 60 67 / 0.18);
+
+  --material-thick: rgb(255 255 255 / 0.86);
+  --material-regular: rgb(249 249 249 / 0.78);
+  --material-blur: saturate(180%) blur(20px);
+
+  --shadow-2: 0 2px 6px rgb(0 0 0 / 0.04), 0 8px 24px rgb(0 0 0 / 0.06);
+  --shadow-3: 0 4px 12px rgb(0 0 0 / 0.06), 0 24px 64px rgb(0 0 0 / 0.12);
+  --shadow-control: 0 3px 8px rgb(0 0 0 / 0.12), 0 3px 1px rgb(0 0 0 / 0.04);
+  --segment-thumb: #ffffff;
+  --focus-ring: 0 0 0 4px rgb(255 45 85 / 0.32);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --blue: #0a84ff; --green: #30d158; --indigo: #5e5ce6; --orange: #ff9f0a;
+    --pink: #ff375f; --purple: #bf5af2; --red: #ff453a; --teal: #40c8e0;
+    --cyan: #64d2ff; --yellow: #ffd60a;
+    --gray: #8e8e93; --gray2: #636366;
+    --accent-text: #ff375f;
+    --accent-tint: rgb(255 55 95 / 0.2);
+    --label: #ffffff;
+    --label-secondary: rgb(235 235 245 / 0.64);
+    --label-tertiary: rgb(235 235 245 / 0.38);
+    --bg-grouped: #000000; --bg-grouped-secondary: #1c1c1e; --bg-elevated: #1c1c1e;
+    --fill: rgb(120 120 128 / 0.36); --fill-secondary: rgb(120 120 128 / 0.32);
+    --fill-tertiary: rgb(118 118 128 / 0.24); --fill-quaternary: rgb(116 116 128 / 0.18);
+    --separator: rgb(84 84 88 / 0.6);
+    --material-thick: rgb(37 37 37 / 0.88); --material-regular: rgb(22 22 22 / 0.8);
+    --shadow-2: 0 8px 24px rgb(0 0 0 / 0.45);
+    --shadow-3: 0 24px 64px rgb(0 0 0 / 0.6);
+    --segment-thumb: #636366;
+    --focus-ring: 0 0 0 4px rgb(255 55 95 / 0.45);
+  }
+}
+:root[data-theme="dark"] {
+  --blue: #0a84ff; --green: #30d158; --indigo: #5e5ce6; --orange: #ff9f0a;
+  --pink: #ff375f; --purple: #bf5af2; --red: #ff453a; --teal: #40c8e0;
+  --cyan: #64d2ff; --yellow: #ffd60a;
+  --gray: #8e8e93; --gray2: #636366;
+  --accent-text: #ff375f;
+  --accent-tint: rgb(255 55 95 / 0.2);
+  --label: #ffffff;
+  --label-secondary: rgb(235 235 245 / 0.64);
+  --label-tertiary: rgb(235 235 245 / 0.38);
+  --bg-grouped: #000000; --bg-grouped-secondary: #1c1c1e; --bg-elevated: #1c1c1e;
+  --fill: rgb(120 120 128 / 0.36); --fill-secondary: rgb(120 120 128 / 0.32);
+  --fill-tertiary: rgb(118 118 128 / 0.24); --fill-quaternary: rgb(116 116 128 / 0.18);
+  --separator: rgb(84 84 88 / 0.6);
+  --material-thick: rgb(37 37 37 / 0.88); --material-regular: rgb(22 22 22 / 0.8);
+  --shadow-2: 0 8px 24px rgb(0 0 0 / 0.45);
+  --shadow-3: 0 24px 64px rgb(0 0 0 / 0.6);
+  --segment-thumb: #636366;
+  --focus-ring: 0 0 0 4px rgb(255 55 95 / 0.45);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; height: 100%; }
+body {
+  margin: 0; height: 100%; overflow: hidden;
+  background: var(--bg-grouped); color: var(--label);
+  font-family: var(--font-text); font-size: var(--text-body);
+  line-height: var(--leading-body); letter-spacing: var(--tracking-body);
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none; user-select: none;
+}
+button, input { font: inherit; letter-spacing: inherit; color: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+h1, h2, h3, p { margin: 0; }
+:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ==========================================================================
+   Navigation stack
+   ========================================================================== */
+.stack { position: fixed; inset: 0; overflow: hidden; }
+.page {
+  position: absolute; inset: 0;
+  background: var(--bg-grouped);
+  transition: transform var(--dur-slow) var(--ease-sheet), filter var(--dur-slow) var(--ease-sheet);
+  will-change: transform;
+}
+.page[data-state="under"] { transform: translateX(-30%); filter: brightness(0.92); pointer-events: none; }
+.page[data-state="offscreen"] { transform: translateX(100%); }
+.page--detail { box-shadow: -1px 0 24px rgb(0 0 0 / 0.08); }
+.page.is-dragging { transition: none; }
+.page[hidden] { display: none; }
+
+.scroller {
+  position: absolute; inset: 0; overflow-y: auto; overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: calc(44px + env(safe-area-inset-top)) 0 calc(96px + env(safe-area-inset-bottom));
+}
+.content { max-width: 680px; margin: 0 auto; padding: 0 var(--space-4); }
+
+/* Translucent nav bar: hairline + title only after content scrolls under it */
+.nav {
+  position: absolute; inset: 0 0 auto 0; z-index: 10;
+  padding-top: env(safe-area-inset-top);
+  background: transparent;
+  box-shadow: 0 0.5px 0 transparent;
+  transition: background-color var(--dur-base) var(--ease-standard), box-shadow var(--dur-base) var(--ease-standard);
+}
+.nav[data-scrolled="true"] {
+  background: var(--material-regular);
+  -webkit-backdrop-filter: var(--material-blur); backdrop-filter: var(--material-blur);
+  box-shadow: 0 0.5px 0 var(--separator);
+}
+.nav__inner {
+  max-width: 680px; margin: 0 auto; height: 44px;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  padding: 0 var(--space-2);
+}
+.nav__title {
+  font-size: var(--text-headline); font-weight: 600; letter-spacing: var(--tracking-body);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60vw;
+  opacity: 0; transform: translateY(4px);
+  transition: opacity var(--dur-fast) var(--ease-standard), transform var(--dur-base) var(--ease-out);
+}
+.nav[data-title="true"] .nav__title { opacity: 1; transform: none; }
+.nav__back {
+  justify-self: start; display: inline-flex; align-items: center; gap: 4px;
+  height: 44px; padding: 0 var(--space-2) 0 2px; border: 0; background: none;
+  color: var(--accent); font-size: var(--text-body); cursor: pointer;
+  transition: opacity var(--dur-fast) var(--ease-standard);
+}
+.nav__back:active { opacity: 0.4; }
+.nav__back svg { width: 12px; height: 21px; }
+
+.large-title {
+  font-family: var(--font-display);
+  font-size: var(--text-large-title); line-height: 41px; font-weight: 700;
+  letter-spacing: 0.011em; /* SF Pro Display at 34pt is tracked slightly open */
+  padding: 3px var(--space-1) var(--space-2);
+}
+
+/* ==========================================================================
+   Inset-grouped list
+   ========================================================================== */
+.group { margin: 0 0 var(--space-8); }
+.group__header {
+  font-size: var(--text-footnote); line-height: 18px; font-weight: 400;
+  text-transform: uppercase; letter-spacing: 0.02em;
+  color: var(--label-secondary); margin: 0 var(--space-4) 7px;
+}
+.group__footer {
+  font-size: var(--text-footnote); line-height: 18px;
+  color: var(--label-secondary); margin: 7px var(--space-4) 0;
+  text-wrap: pretty;
+}
+.list {
+  list-style: none; margin: 0; padding: 0;
+  background: var(--bg-grouped-secondary);
+  border-radius: var(--radius-md); overflow: hidden;
+}
+.row {
+  position: relative; display: flex; align-items: center; gap: var(--space-3);
+  min-height: var(--touch-min); padding: 0 var(--space-4);
+  font-size: var(--text-body); width: 100%;
+  border: 0; background: transparent; text-align: left;
+  transition: background-color var(--dur-fast) var(--ease-standard), opacity var(--dur-base) var(--ease-standard);
+}
+.list > * { position: relative; }
+/* Inset separator between any two cells: starts where the text starts */
+.list > * + *::before {
+  content: ""; position: absolute; top: 0; right: 0; z-index: 2; pointer-events: none;
+  left: var(--sep-inset, var(--space-4)); height: 0.5px; background: var(--separator);
+}
+.list:has(.row__icon) { --sep-inset: 57px; }
+.row__icon {
+  flex: none; width: 29px; height: 29px; border-radius: 7px;
+  display: grid; place-items: center; color: #fff; background: var(--icon-bg, var(--gray));
+}
+.row__icon svg { width: 18px; height: 18px; }
+.row__title { flex: 1; min-width: 0; padding: 11px 0; line-height: 22px; }
+.row__sub { display: block; font-size: var(--text-footnote); line-height: 18px; color: var(--label-secondary); }
+.row__value {
+  color: var(--label-secondary); white-space: nowrap; font-variant-numeric: tabular-nums;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.row__chevron { color: var(--label-tertiary); flex: none; width: 8px; height: 14px; margin-left: -4px; }
+.row--link { cursor: pointer; }
+.row--link:active, .row--action:active { background: var(--fill-secondary); }
+.row--action { cursor: pointer; justify-content: center; color: var(--accent-text); }
+.row--action .row__title { flex: 0 1 auto; }
+.row--destructive { color: var(--red); }
+.row--left { justify-content: flex-start; }
+.row__check { color: var(--accent); width: 17px; height: 17px; flex: none; opacity: 0; transition: opacity var(--dur-fast) var(--ease-standard); }
+.row[aria-checked="true"] .row__check { opacity: 1; }
+
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--green)); display: inline-block; flex: none; }
+
+/* Collapsible group (shown only while notifications are allowed) */
+.collapse {
+  display: grid; grid-template-rows: 1fr;
+  transition: grid-template-rows var(--dur-slow) var(--ease-sheet), opacity var(--dur-base) var(--ease-standard);
+}
+.collapse > * { overflow: hidden; min-height: 0; }
+.collapse[data-open="false"] { grid-template-rows: 0fr; opacity: 0; }
+
+/* ==========================================================================
+   Profile header
+   ========================================================================== */
+.profile {
+  display: flex; align-items: center; gap: var(--space-4);
+  padding: var(--space-3) var(--space-4); min-height: 84px;
+}
+.avatar {
+  flex: none; width: 60px; height: 60px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--gray); color: #fff;
+  font-family: var(--font-display); font-size: var(--text-title2); font-weight: 600; letter-spacing: 0.02em;
+}
+.avatar--lg { width: 88px; height: 88px; font-size: 2.125rem; }
+.profile__text { flex: 1; min-width: 0; }
+.profile__name { display: block; font-family: var(--font-display); font-size: var(--text-title2); line-height: 28px; font-weight: 400; letter-spacing: -0.012em; }
+.profile__meta { font-size: var(--text-footnote); line-height: 18px; color: var(--label-secondary); margin-top: 2px; }
+.plan {
+  display: inline-flex; align-items: center; height: 20px; padding: 0 7px; margin-right: 6px;
+  border-radius: var(--radius-pill); vertical-align: 1px;
+  font-size: var(--text-caption2); font-weight: 600; letter-spacing: 0.01em;
+  color: var(--accent-text); background: var(--accent-tint);
+}
+
+.hero { text-align: center; padding: var(--space-4) 0 var(--space-6); }
+.hero .avatar { margin: 0 auto var(--space-3); }
+.hero h2 { font-family: var(--font-display); font-size: var(--text-title2); font-weight: 600; letter-spacing: -0.012em; line-height: 28px; }
+.hero p { color: var(--label-secondary); font-size: var(--text-subheadline); margin-top: 2px; }
+
+/* ==========================================================================
+   Toggle switch
+   ========================================================================== */
+.switch { position: relative; display: inline-block; width: 51px; height: 31px; flex: none; }
+.switch input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; z-index: 1; width: 100%; height: 100%; }
+.switch span {
+  position: absolute; inset: 0; border-radius: 999px; background: var(--fill);
+  transition: background-color var(--dur-base) var(--ease-standard);
+}
+.switch span::after {
+  content: ""; position: absolute; top: 2px; left: 2px;
+  width: 27px; height: 27px; border-radius: 999px; background: #fff;
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.15), 0 3px 1px rgb(0 0 0 / 0.06);
+  transition: transform var(--dur-base) var(--spring-snappy), width var(--dur-fast) var(--ease-standard);
+}
+.switch input:checked + span { background: var(--green); }
+.switch input:checked + span::after { transform: translateX(20px); }
+.switch input:active + span::after { width: 33px; }
+.switch input:checked:active + span::after { transform: translateX(14px); }
+.switch input:focus-visible + span { box-shadow: var(--focus-ring); }
+
+/* ==========================================================================
+   Segmented control (sliding thumb)
+   ========================================================================== */
+.segment-row { padding: var(--space-2) var(--space-4); }
+.segmented {
+  position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+  padding: 2px; border-radius: 9px; background: var(--fill-tertiary);
+}
+.segmented__thumb {
+  position: absolute; top: 2px; bottom: 2px; left: 2px;
+  width: calc((100% - 4px) / var(--count, 2));
+  border-radius: 7px; /* 9 − 2: concentric */
+  background: var(--segment-thumb); box-shadow: var(--shadow-control);
+  transform: translateX(calc(100% * var(--index, 0)));
+  transition: transform var(--dur-base) var(--spring-snappy);
+}
+.segmented button {
+  position: relative; z-index: 1; height: 28px; padding: 0 14px;
+  border: 0; border-radius: 7px; background: transparent; color: var(--label);
+  font-size: var(--text-footnote); font-weight: 400; cursor: pointer;
+  transition: opacity var(--dur-fast) var(--ease-standard);
+}
+.segmented button[aria-selected="true"] { font-weight: 600; }
+.segmented button:active:not([aria-selected="true"]) { opacity: 0.5; }
+
+.swap { display: inline-block; transition: opacity var(--dur-fast) var(--ease-standard), transform var(--dur-base) var(--ease-out); }
+.swap.is-out { opacity: 0; transform: translateY(-4px); }
+
+/* ==========================================================================
+   Tab bar
+   ========================================================================== */
+.tabbar {
+  position: fixed; inset: auto 0 0 0; z-index: 40;
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+  padding: 6px 8px calc(4px + env(safe-area-inset-bottom));
+  background: var(--material-regular);
+  -webkit-backdrop-filter: var(--material-blur); backdrop-filter: var(--material-blur);
+  box-shadow: 0 -0.5px 0 var(--separator);
+}
+.tabbar a {
+  display: grid; justify-items: center; gap: 2px; min-height: 44px; padding-top: 2px;
+  font-size: 0.625rem; font-weight: 600; letter-spacing: 0.01em; color: var(--gray); text-decoration: none;
+}
+.tabbar svg { width: 24px; height: 24px; }
+.tabbar a[aria-current="page"] { color: var(--accent); }
+
+/* ==========================================================================
+   Action sheet (sign out, disconnect)
+   ========================================================================== */
+.action-sheet {
+  border: 0; padding: 0 var(--space-2) calc(var(--space-2) + env(safe-area-inset-bottom));
+  margin: auto auto 0; width: 100%; max-width: 440px; max-height: none;
+  background: transparent; color: var(--label); overflow: visible;
+}
+.action-sheet::backdrop { background: rgb(0 0 0 / 0); transition: background-color var(--dur-base) var(--ease-standard); }
+.action-sheet.is-open::backdrop { background: rgb(0 0 0 / 0.35); }
+.action-sheet__panel {
+  transform: translateY(110%);
+  transition: transform var(--dur-slow) var(--ease-sheet);
+}
+.action-sheet.is-open .action-sheet__panel { transform: none; }
+.action-sheet__group {
+  border-radius: 14px; overflow: hidden;
+  background: var(--material-thick);
+  -webkit-backdrop-filter: var(--material-blur); backdrop-filter: var(--material-blur);
+}
+.action-sheet__message {
+  padding: 14px var(--space-4); text-align: center;
+  font-size: var(--text-footnote); line-height: 18px; color: var(--label-secondary);
+}
+.action-sheet__message strong { display: block; font-weight: 600; color: var(--label-secondary); }
+.action-sheet button {
+  display: block; width: 100%; height: 57px; border: 0; background: transparent;
+  font-size: 1.25rem; color: var(--accent); cursor: pointer; position: relative;
+  transition: background-color var(--dur-fast) var(--ease-standard);
+}
+.action-sheet button:active { background: var(--fill-secondary); }
+.action-sheet__group > * + *::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 0.5px; background: var(--separator);
+}
+.action-sheet__message + button::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 0.5px; background: var(--separator); }
+.action-sheet .is-destructive { color: var(--red); }
+.action-sheet .is-cancel {
+  margin-top: var(--space-2); border-radius: 14px; font-weight: 600; background: var(--bg-elevated);
+}
+.action-sheet .is-cancel:active { background: color-mix(in srgb, var(--bg-elevated) 80%, var(--label) 8%); }
+
+/* ==========================================================================
+   Toast (HUD)
+   ========================================================================== */
+.toast {
+  position: fixed; left: 50%; top: calc(10px + env(safe-area-inset-top)); z-index: 100;
+  display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 32px);
+  padding: 10px 18px 10px 12px; border-radius: var(--radius-pill);
+  background: var(--material-thick);
+  -webkit-backdrop-filter: var(--material-blur); backdrop-filter: var(--material-blur);
+  box-shadow: var(--shadow-2), 0 0 0 0.5px var(--separator);
+  font-size: var(--text-subheadline); font-weight: 600; line-height: 20px;
+  transform: translate(-50%, -16px) scale(0.96); opacity: 0; pointer-events: none;
+  transition: transform var(--dur-slow) var(--spring-snappy), opacity var(--dur-base) var(--ease-standard);
+}
+.toast.is-visible { transform: translate(-50%, 0); opacity: 1; }
+.toast svg { width: 20px; height: 20px; flex: none; color: var(--green); }
+
+/* Spinner (iOS activity indicator) */
+.spinner { width: 20px; height: 20px; flex: none; color: var(--label-secondary); animation: spin 1s steps(8) infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.app-version { text-align: center; font-size: var(--text-footnote); color: var(--label-tertiary); margin: calc(-1 * var(--space-4)) 0 var(--space-8); font-variant-numeric: tabular-nums; }
+
+/* Accessibility preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root { --material-blur: none; --material-regular: var(--bg-grouped); --material-thick: var(--bg-elevated); }
+}
+</style>
+</head>
+<body>
+
+<!-- Inline symbol set (Lucide-style, stroke 2, round caps) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+    <symbol id="i-dumbbell" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11"/><path d="M21 21l-1-1"/><path d="M3 3l1 1"/><path d="M18 22l4-4"/><path d="M2 6l4-4"/><path d="M3 10l7-7"/><path d="M14 21l7-7"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-watch" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><path d="M12 10v2l1 1"/><path d="m16.13 7.66-.81-4.05a2 2 0 0 0-2-1.61h-2.68a2 2 0 0 0-2 1.61l-.78 4.05"/><path d="m7.88 16.36.8 4a2 2 0 0 0 2 1.61h2.72a2 2 0 0 0 2-1.61l.81-4.05"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></symbol>
+    <symbol id="i-scale" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 9.5a5 5 0 0 1 8 0"/><path d="M12 11.5l1.5-2.5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-location" viewBox="0 0 24 24"><path d="M3 11l19-9-9 19-2-8-8-2z"/></symbol>
+    <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11"/></symbol>
+    <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 8 14"><path d="M1 1l6 6-6 6"/></symbol>
+    <symbol id="i-back" viewBox="0 0 12 21"><path d="M10.5 1.5 1.5 10.5l9 9"/></symbol>
+  </defs>
+</svg>
+
+<div class="stack">
+  <!-- ============================== Root page ============================== -->
+  <section class="page" id="page-root" data-state="top" aria-label="Settings">
+    <header class="nav" data-scrolled="false" data-title="false">
+      <div class="nav__inner">
+        <span></span>
+        <h2 class="nav__title" aria-hidden="true">Settings</h2>
+        <span></span>
+      </div>
+    </header>
+
+    <div class="scroller">
+      <div class="content">
+        <h1 class="large-title">Settings</h1>
+
+        <!-- Profile -->
+        <section class="group" aria-label="Account">
+          <div class="list">
+            <button class="row row--link profile" data-detail="profile">
+              <span class="avatar" aria-hidden="true">AM</span>
+              <span class="profile__text">
+                <span class="profile__name" id="profile-name">Alex Morgan</span>
+                <span class="profile__meta" style="display:block"><span class="plan">Premium</span>Renews March 12, 2027</span>
+              </span>
+              <svg class="row__chevron" aria-hidden="true"><use href="#i-chevron" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </section>
+
+        <!-- Notifications -->
+        <section class="group" aria-labelledby="h-notif">
+          <h3 class="group__header" id="h-notif">Notifications</h3>
+          <ul class="list">
+            <li class="row">
+              <span class="row__icon" style="--icon-bg: var(--red)"><svg aria-hidden="true"><use href="#i-bell" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <label class="row__title" for="n-allow">Allow notifications</label>
+              <span class="switch"><input id="n-allow" type="checkbox" role="switch" checked><span></span></span>
+            </li>
+          </ul>
+        </section>
+
+        <div class="collapse" id="notif-options" data-open="true">
+          <div>
+            <section class="group" aria-labelledby="h-remind">
+              <h3 class="group__header" id="h-remind">Notify me about</h3>
+              <ul class="list">
+                <li class="row">
+                  <span class="row__icon" style="--icon-bg: var(--blue)"><svg aria-hidden="true"><use href="#i-dumbbell" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  <label class="row__title" for="n-workout">Workout reminders</label>
+                  <span class="switch"><input id="n-workout" type="checkbox" role="switch" checked><span></span></span>
+                </li>
+                <li class="row">
+                  <span class="row__icon" style="--icon-bg: var(--orange)"><svg aria-hidden="true"><use href="#i-flame" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  <label class="row__title" for="n-goals">Goals and streaks</label>
+                  <span class="switch"><input id="n-goals" type="checkbox" role="switch" checked><span></span></span>
+                </li>
+                <li class="row">
+                  <span class="row__icon" style="--icon-bg: var(--indigo)"><svg aria-hidden="true"><use href="#i-chart" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  <label class="row__title" for="n-weekly">Weekly summary</label>
+                  <span class="switch"><input id="n-weekly" type="checkbox" role="switch"><span></span></span>
+                </li>
+                <li class="row">
+                  <span class="row__icon" style="--icon-bg: var(--green)"><svg aria-hidden="true"><use href="#i-users" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  <label class="row__title" for="n-friends">Friend activity</label>
+                  <span class="switch"><input id="n-friends" type="checkbox" role="switch" checked><span></span></span>
+                </li>
+              </ul>
+              <p class="group__footer">Workout reminders arrive at the time you usually train.</p>
+            </section>
+          </div>
+        </div>
+
+        <!-- Units -->
+        <section class="group" aria-labelledby="h-units">
+          <h3 class="group__header" id="h-units">Units</h3>
+          <ul class="list">
+            <li class="segment-row">
+              <div class="segmented" role="tablist" aria-label="Measurement system" style="--count: 2; --index: 0" id="units">
+                <span class="segmented__thumb" aria-hidden="true"></span>
+                <button role="tab" aria-selected="true" data-value="metric">Metric</button>
+                <button role="tab" aria-selected="false" data-value="imperial" tabindex="-1">Imperial</button>
+              </div>
+            </li>
+            <li class="row"><span class="row__title">Weight</span><span class="row__value"><span class="swap" data-unit="weight">72.4 kg</span></span></li>
+            <li class="row"><span class="row__title">Height</span><span class="row__value"><span class="swap" data-unit="height">178 cm</span></span></li>
+            <li class="row"><span class="row__title">Distance</span><span class="row__value"><span class="swap" data-unit="distance">Kilometers</span></span></li>
+            <li class="row"><span class="row__title">Pace</span><span class="row__value"><span class="swap" data-unit="pace">min/km</span></span></li>
+          </ul>
+        </section>
+
+        <!-- Connected devices -->
+        <section class="group" aria-labelledby="h-devices">
+          <h3 class="group__header" id="h-devices">Connected devices</h3>
+          <ul class="list" id="device-list">
+            <li><button class="row row--link" data-detail="device" data-device="watch">
+              <span class="row__icon" style="--icon-bg: var(--gray)"><svg aria-hidden="true"><use href="#i-watch" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="row__title">Apple Watch</span>
+              <span class="row__value" data-status="watch"></span>
+              <svg class="row__chevron" aria-hidden="true"><use href="#i-chevron" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button></li>
+            <li><button class="row row--link" data-detail="device" data-device="strap">
+              <span class="row__icon" style="--icon-bg: var(--red)"><svg aria-hidden="true"><use href="#i-heart" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="row__title">Heart rate strap</span>
+              <span class="row__value" data-status="strap"></span>
+              <svg class="row__chevron" aria-hidden="true"><use href="#i-chevron" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button></li>
+            <li><button class="row row--link" data-detail="device" data-device="scale">
+              <span class="row__icon" style="--icon-bg: var(--teal)"><svg aria-hidden="true"><use href="#i-scale" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="row__title">Smart scale</span>
+              <span class="row__value" data-status="scale"></span>
+              <svg class="row__chevron" aria-hidden="true"><use href="#i-chevron" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button></li>
+            <li><button class="row row--link" data-detail="add-device">
+              <span class="row__icon" style="--icon-bg: var(--blue)"><svg aria-hidden="true"><use href="#i-plus" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="row__title">Add device</span>
+              <svg class="row__chevron" aria-hidden="true"><use href="#i-chevron" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button></li>
+          </ul>
+        </section>
+
+        <!-- Privacy -->
+        <section class="group" aria-labelledby="h-privacy">
+          <h3 class="group__header" id="h-privacy">Privacy</h3>
+          <ul class="list">
+            <li><button class="row row--link" data-detail="choice" data-choice="visibility">
+              <span class="row__icon" style="--icon-bg: var(--blue)"><svg aria-hidden="true"><use href="#i-eye" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="row__title">Profile visibility</span>
+              <span class="row__value" data-choice-value="visibility">Friends</span>
+              <svg class="row__chevron" aria-hidden="true"><use href="#i-chevron" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button></li>
+            <li><button class="row row--link" data-detail="choice" data-choice="location">
+              <span class="row__icon" style="--icon-bg: var(--blue)"><svg aria-hidden="true"><use href="#i-location" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="row__title">Location</span>
+              <span class="row__value" data-choice-value="location">While Using</span>
+              <svg class="row__chevron" aria-hidden="true"><use href="#i-chevron" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button></li>
+            <li class="row">
+              <span class="row__icon" style="--icon-bg: var(--green)"><svg aria-hidden="true"><use href="#i-activity" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <label class="row__title" for="p-share">Share workouts</label>
+              <span class="switch"><input id="p-share" type="checkbox" role="switch" checked><span></span></span>
+            </li>
+            <li class="row">
+              <span class="row__icon" style="--icon-bg: var(--gray)"><svg aria-hidden="true"><use href="#i-hand" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <label class="row__title" for="p-analytics">Improve Pulse</label>
+              <span class="switch"><input id="p-analytics" type="checkbox" role="switch"><span></span></span>
+            </li>
+            <li><button class="row row--link" data-action="export">
+              <span class="row__icon" style="--icon-bg: var(--gray)"><svg aria-hidden="true"><use href="#i-download" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="row__title">Download your data</span>
+              <svg class="row__chevron" aria-hidden="true"><use href="#i-chevron" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button></li>
+          </ul>
+          <p class="group__footer">Health data stays encrypted on your device. Improve Pulse shares anonymous usage data only.</p>
+        </section>
+
+        <!-- Sign out -->
+        <section class="group" aria-label="Sign out">
+          <div class="list">
+            <button class="row row--action row--destructive" data-action="signout"><span class="row__title">Sign Out</span></button>
+          </div>
+        </section>
+
+        <p class="app-version">Pulse 4.2.1 (1088)</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== Detail page ============================== -->
+  <section class="page page--detail" id="page-detail" data-state="offscreen" hidden aria-labelledby="detail-title">
+    <header class="nav" data-scrolled="false" data-title="true">
+      <div class="nav__inner">
+        <button class="nav__back" data-action="back">
+          <svg aria-hidden="true"><use href="#i-back" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Settings</span>
+        </button>
+        <h2 class="nav__title" id="detail-title"></h2>
+        <span></span>
+      </div>
+    </header>
+    <div class="scroller">
+      <div class="content" id="detail-body" style="padding-top: var(--space-5)"></div>
+    </div>
+  </section>
+</div>
+
+<!-- Tab bar -->
+<nav class="tabbar" aria-label="Pulse">
+  <a href="#" data-tab><svg aria-hidden="true"><use href="#i-home" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>Today</a>
+  <a href="#" data-tab><svg aria-hidden="true"><use href="#i-dumbbell" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>Workouts</a>
+  <a href="#" data-tab><svg aria-hidden="true"><use href="#i-users" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>Friends</a>
+  <a href="#" aria-current="page"><svg aria-hidden="true"><use href="#i-sliders" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>Settings</a>
+</nav>
+
+<!-- Action sheet -->
+<dialog class="action-sheet" id="sheet" aria-labelledby="sheet-title">
+  <div class="action-sheet__panel">
+    <div class="action-sheet__group">
+      <p class="action-sheet__message"><strong id="sheet-title"></strong><span id="sheet-message"></span></p>
+      <button class="is-destructive" id="sheet-confirm"></button>
+    </div>
+    <button class="is-cancel" id="sheet-cancel">Cancel</button>
+  </div>
+</dialog>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <svg aria-hidden="true"><use href="#i-check-circle" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span id="toast-text"></span>
+</div>
+
+<script>
+(() => {
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const DUR = reduceMotion ? 1 : 420;
+
+  const chevron = '<svg class="row__chevron" aria-hidden="true"><use href="#i-chevron" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const check = '<svg class="row__check" aria-hidden="true"><use href="#i-check" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const spinner = '<svg class="spinner" viewBox="0 0 24 24" aria-hidden="true">' +
+    Array.from({ length: 8 }, (_, i) => `<line x1="12" y1="3" x2="12" y2="7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" opacity="${(0.25 + i * 0.1).toFixed(2)}" transform="rotate(${i * 45} 12 12)"/>`).join('') + '</svg>';
+  const sw = (id, on, label) => `<li class="row"><label class="row__title" for="${id}">${label}</label><span class="switch"><input id="${id}" type="checkbox" role="switch" ${on ? 'checked' : ''}><span></span></span></li>`;
+  const info = (label, value) => `<li class="row"><span class="row__title">${label}</span><span class="row__value">${value}</span></li>`;
+
+  /* ---------------- State ---------------- */
+  const state = {
+    units: 'metric',
+    choices: { visibility: 'Friends', location: 'While Using' },
+    devices: {
+      watch: { name: 'Apple Watch', model: 'Apple Watch Series 10', status: 'connected', battery: 82, synced: 'Just now' },
+      strap: { name: 'Heart rate strap', model: 'Polar H10', status: 'off', battery: 64, synced: 'Yesterday' },
+      scale: { name: 'Smart scale', model: 'Withings Body+', status: 'connected', battery: 91, synced: 'Today, 7:12 AM' },
+    },
+  };
+  const choiceDefs = {
+    visibility: { title: 'Profile visibility', options: ['Everyone', 'Friends', 'Only Me'],
+      footer: 'Choose who can see your profile, workouts and achievements.' },
+    location: { title: 'Location', options: ['Never', 'While Using', 'Always'],
+      footer: 'Pulse uses your location to map outdoor walks, runs and rides. Always lets Pulse track workouts started from your watch.' },
+  };
+  const unitText = {
+    metric:   { weight: '72.4 kg', height: '178 cm', distance: 'Kilometers', pace: 'min/km' },
+    imperial: { weight: '159.6 lb', height: '5′ 10″', distance: 'Miles', pace: 'min/mi' },
+  };
+
+  /* ---------------- Large title → inline title on scroll ---------------- */
+  function bindNav(page) {
+    const scroller = $('.scroller', page), nav = $('.nav', page);
+    const big = $('.large-title', page);
+    const update = () => {
+      const y = scroller.scrollTop;
+      nav.dataset.scrolled = y > 2;
+      if (big) nav.dataset.title = y > big.offsetHeight - 6;
+    };
+    scroller.addEventListener('scroll', update, { passive: true });
+    update();
+  }
+  const root = $('#page-root'), detail = $('#page-detail');
+  bindNav(root); bindNav(detail);
+
+  /* ---------------- Notifications master switch ---------------- */
+  const allow = $('#n-allow'), notifOptions = $('#notif-options');
+  allow.addEventListener('change', () => {
+    notifOptions.dataset.open = allow.checked;
+    $$('input', notifOptions).forEach(i => (i.disabled = !allow.checked));
+    notifOptions.inert = !allow.checked;
+  });
+
+  /* ---------------- Segmented control ---------------- */
+  const seg = $('#units');
+  const segButtons = $$('button', seg);
+  function setUnits(value, focus) {
+    if (value === state.units) return;
+    state.units = value;
+    segButtons.forEach((b, i) => {
+      const on = b.dataset.value === value;
+      b.setAttribute('aria-selected', on);
+      b.tabIndex = on ? 0 : -1;
+      if (on) { seg.style.setProperty('--index', i); if (focus) b.focus(); }
+    });
+    $$('[data-unit]').forEach(el => {
+      el.classList.add('is-out');
+      setTimeout(() => { el.textContent = unitText[value][el.dataset.unit]; el.classList.remove('is-out'); }, reduceMotion ? 0 : 140);
+    });
+  }
+  segButtons.forEach(b => b.addEventListener('click', () => setUnits(b.dataset.value)));
+  seg.addEventListener('keydown', e => {
+    if (!['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+    const i = segButtons.findIndex(b => b.dataset.value === state.units);
+    const next = segButtons[(i + (e.key === 'ArrowRight' ? 1 : segButtons.length - 1)) % segButtons.length];
+    setUnits(next.dataset.value, true);
+  });
+
+  /* ---------------- Device status on the root list ---------------- */
+  function renderDeviceStatus() {
+    for (const [key, d] of Object.entries(state.devices)) {
+      const el = $(`[data-status="${key}"]`);
+      el.innerHTML = d.status === 'connected'
+        ? '<span class="dot" style="--c: var(--green)" aria-hidden="true"></span>Connected'
+        : 'Not connected';
+    }
+  }
+  renderDeviceStatus();
+
+  /* ---------------- Push navigation ---------------- */
+  let lastTrigger = null;
+  function push(title, html, onMount) {
+    const replacing = !detail.hidden && detail.dataset.state === 'top';
+    $('#detail-title').textContent = title;
+    $('#detail-body').innerHTML = html;
+    if (replacing) { onMount && onMount($('#detail-body')); return; }
+    $('.scroller', detail).scrollTop = 0;
+    detail.hidden = false;
+    detail.dataset.state = 'offscreen';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      detail.dataset.state = 'top';
+      root.dataset.state = 'under';
+      root.inert = true;
+    }));
+    onMount && onMount($('#detail-body'));
+    setTimeout(() => $('.nav__back', detail).focus({ preventScroll: true }), DUR);
+  }
+  function pop() {
+    detail.dataset.state = 'offscreen';
+    root.dataset.state = 'top';
+    root.inert = false;
+    setTimeout(() => {
+      if (detail.dataset.state === 'offscreen') detail.hidden = true;
+      lastTrigger && lastTrigger.focus({ preventScroll: true });
+    }, DUR);
+  }
+  $('.nav__back', detail).addEventListener('click', pop);
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !detail.hidden && !$('#sheet').open) pop(); });
+
+  /* Interactive edge-swipe back, like UINavigationController */
+  (() => {
+    let startX = 0, dx = 0, tracking = false;
+    const w = () => detail.offsetWidth;
+    detail.addEventListener('touchstart', e => {
+      const t = e.touches[0];
+      if (t.clientX > 24 || detail.dataset.state !== 'top') return;
+      tracking = true; startX = t.clientX; dx = 0;
+      detail.classList.add('is-dragging'); root.classList.add('is-dragging');
+    }, { passive: true });
+    detail.addEventListener('touchmove', e => {
+      if (!tracking) return;
+      dx = Math.max(0, e.touches[0].clientX - startX);
+      const p = dx / w();
+      detail.style.transform = `translateX(${dx}px)`;
+      root.style.transform = `translateX(${-30 + 30 * p}%)`;
+      root.style.filter = `brightness(${0.92 + 0.08 * p})`;
+    }, { passive: true });
+    const end = () => {
+      if (!tracking) return;
+      tracking = false;
+      detail.classList.remove('is-dragging'); root.classList.remove('is-dragging');
+      detail.style.transform = root.style.transform = root.style.filter = '';
+      if (dx > w() * 0.33) pop();
+    };
+    detail.addEventListener('touchend', end);
+    detail.addEventListener('touchcancel', end);
+  })();
+
+  /* ---------------- Detail renderers ---------------- */
+  const details = {
+    profile() {
+      push('Account', `
+        <div class="hero">
+          <div class="avatar avatar--lg" aria-hidden="true">AM</div>
+          <h2>Alex Morgan</h2>
+          <p>alex.morgan@icloud.com</p>
+        </div>
+        <section class="group"><ul class="list">
+          ${info('Name', 'Alex Morgan')}
+          ${info('Birthday', 'May 4, 1994')}
+          ${info('Weekly goal', '4 workouts')}
+        </ul></section>
+        <section class="group">
+          <h3 class="group__header">Subscription</h3>
+          <ul class="list">
+            ${info('Plan', 'Pulse Premium')}
+            ${info('Renews', 'March 12, 2027')}
+            <li><button class="row row--link row--left" style="color: var(--accent-text)" data-toast="Opening subscriptions"><span class="row__title">Manage subscription</span></button></li>
+          </ul>
+          <p class="group__footer">Premium includes guided programs, advanced heart rate zones and unlimited workout history.</p>
+        </section>`);
+    },
+
+    choice(key) {
+      const def = choiceDefs[key];
+      const rows = def.options.map(o => `
+        <li><button class="row row--link" role="menuitemradio" aria-checked="${state.choices[key] === o}" data-option="${o}">
+          <span class="row__title">${o}</span>${check}
+        </button></li>`).join('');
+      push(def.title, `
+        <section class="group">
+          <ul class="list" role="menu" aria-label="${def.title}">${rows}</ul>
+          <p class="group__footer">${def.footer}</p>
+        </section>`, body => {
+        $$('[data-option]', body).forEach(btn => btn.addEventListener('click', () => {
+          state.choices[key] = btn.dataset.option;
+          $$('[data-option]', body).forEach(b => b.setAttribute('aria-checked', b === btn));
+          $(`[data-choice-value="${key}"]`).textContent = btn.dataset.option;
+        }));
+      });
+    },
+
+    device(key) {
+      const d = state.devices[key];
+      const on = d.status === 'connected';
+      const html = on ? `
+        <section class="group"><ul class="list">
+          ${info('Status', '<span class="dot" style="--c: var(--green)" aria-hidden="true"></span>Connected')}
+          ${info('Model', d.model)}
+          ${info('Battery', d.battery + '%')}
+          ${info('Last synced', d.synced)}
+        </ul></section>
+        <section class="group">
+          <h3 class="group__header">Sync</h3>
+          <ul class="list">
+            ${sw(key + '-workouts', true, 'Workouts')}
+            ${sw(key + '-hr', key !== 'scale', key === 'scale' ? 'Body composition' : 'Heart rate')}
+          </ul>
+          <p class="group__footer">Pulse syncs in the background whenever ${d.name.toLowerCase()} is nearby.</p>
+        </section>
+        <section class="group"><div class="list">
+          <button class="row row--action row--destructive" data-disconnect><span class="row__title">Disconnect</span></button>
+        </div></section>` : `
+        <section class="group"><ul class="list">
+          ${info('Status', 'Not connected')}
+          ${info('Model', d.model)}
+          ${info('Last synced', d.synced)}
+        </ul></section>
+        <section class="group">
+          <div class="list">
+            <button class="row row--action" data-connect><span class="row__title">Connect</span></button>
+          </div>
+          <p class="group__footer">Wear the strap and make sure Bluetooth is on.</p>
+        </section>`;
+      push(d.name, html, body => {
+        const connect = $('[data-connect]', body);
+        connect && connect.addEventListener('click', () => {
+          if (connect.dataset.busy) return;
+          connect.dataset.busy = '1';
+          connect.innerHTML = `${spinner}<span class="row__title" style="color: var(--label-secondary)">Connecting…</span>`;
+          setTimeout(() => {
+            d.status = 'connected'; d.synced = 'Just now';
+            renderDeviceStatus();
+            if (detail.dataset.state === 'top') details.device(key);
+            toast(`${d.name} connected`);
+          }, 1600);
+        });
+        const disc = $('[data-disconnect]', body);
+        disc && disc.addEventListener('click', () => confirmSheet({
+          title: `Disconnect ${d.name}?`,
+          message: 'Workouts already synced stay in Pulse.',
+          confirm: 'Disconnect',
+          onConfirm() { d.status = 'off'; renderDeviceStatus(); pop(); toast(`${d.name} disconnected`); },
+        }));
+      });
+    },
+
+    'add-device'() {
+      push('Add device', `
+        <section class="group">
+          <h3 class="group__header" style="display:flex;align-items:center;gap:8px">Nearby devices ${spinner}</h3>
+          <ul class="list">
+            <li class="row"><span class="row__title" style="color: var(--label-secondary)">Searching…</span></li>
+          </ul>
+          <p class="group__footer">Put your device in pairing mode and keep it close to your iPhone.</p>
+        </section>`);
+    },
+  };
+
+  document.addEventListener('click', e => {
+    const t = e.target.closest('[data-detail]');
+    if (t) { lastTrigger = t; details[t.dataset.detail](t.dataset.choice || t.dataset.device); return; }
+    const toastBtn = e.target.closest('[data-toast]');
+    if (toastBtn) { toast(toastBtn.dataset.toast); return; }
+    const a = e.target.closest('[data-action]');
+    if (!a) return;
+    if (a.dataset.action === 'export') toast('We’ll email you a download link');
+    if (a.dataset.action === 'signout') confirmSheet({
+      title: 'Sign out of Pulse?',
+      message: 'Your workouts are saved to your account and will be here when you sign back in.',
+      confirm: 'Sign Out',
+      onConfirm() { toast('Signed out'); },
+    });
+  });
+  $$('[data-tab]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
+
+  /* ---------------- Action sheet ---------------- */
+  const sheet = $('#sheet');
+  let onConfirm = null;
+  function confirmSheet(opts) {
+    $('#sheet-title').textContent = opts.title;
+    $('#sheet-message').textContent = opts.message;
+    $('#sheet-confirm').textContent = opts.confirm;
+    onConfirm = opts.onConfirm;
+    sheet.showModal();
+    requestAnimationFrame(() => requestAnimationFrame(() => sheet.classList.add('is-open')));
+  }
+  function closeSheet(after) {
+    sheet.classList.remove('is-open');
+    setTimeout(() => { sheet.close(); after && after(); }, reduceMotion ? 0 : 320);
+  }
+  $('#sheet-cancel').addEventListener('click', () => closeSheet());
+  $('#sheet-confirm').addEventListener('click', () => closeSheet(onConfirm));
+  sheet.addEventListener('cancel', e => { e.preventDefault(); closeSheet(); });
+  sheet.addEventListener('click', e => { if (e.target === sheet) closeSheet(); });
+
+  /* ---------------- Toast ---------------- */
+  const toastEl = $('#toast');
+  let toastTimer;
+  function toast(text) {
+    $('#toast-text').textContent = text;
+    toastEl.classList.add('is-visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('is-visible'), 2200);
+  }
+})();
+</script>
+</body>
+</html>

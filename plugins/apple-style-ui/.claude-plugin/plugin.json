@@ -1,0 +1,10 @@
+{
+  "name": "apple-style-ui",
+  "description": "Apple-style UI design system and workflow for web, iOS, macOS, Flutter and React Native.",
+  "version": "1.0.0",
+  "author": { "name": "Adu", "url": "https://github.com/Aduhax16" },
+  "homepage": "https://github.com/Aduhax16/apple-style-ui-skill",
+  "repository": "https://github.com/Aduhax16/apple-style-ui-skill",
+  "license": "MIT",
+  "keywords": ["design", "ui", "apple", "ios", "macos", "hig", "tailwind", "swiftui"]
+}

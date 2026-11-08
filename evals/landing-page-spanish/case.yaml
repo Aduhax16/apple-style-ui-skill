@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: landing-page-spanish
+expected_outcome: |
+  A single index.html landing page in Spanish with apple.com-like hero, sections, CTA, light and dark mode, no gradients or emoji icons.

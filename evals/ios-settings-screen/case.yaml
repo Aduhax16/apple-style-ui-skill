@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: ios-settings-screen
+expected_outcome: |
+  settings.html with iOS large title, inset-grouped lists, working toggles and segmented control, destructive sign out, dark mode, 375px friendly.

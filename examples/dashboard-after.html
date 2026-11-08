@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>FlowMetrics Dashboard</title>
+<style>
+/* ==========================================================================
+   apple-style-ui · design tokens
+   Drop-in CSS variables modelled on Apple's Human Interface Guidelines
+   (system colors, text styles, materials, motion). Light + dark.
+
+   Usage: paste into your global stylesheet (or @import it) and build every
+   component on these variables. Never hard-code a color that exists here.
+
+   Theme switching:
+     - follows the OS by default (prefers-color-scheme)
+     - force with <html data-theme="light"> or <html data-theme="dark">
+   ========================================================================== */
+
+:root {
+  color-scheme: light dark;
+
+  /* ---- Typography ------------------------------------------------------ */
+  /* SF Pro ships with Apple devices; the stack falls back to the closest
+     system/neutral grotesk everywhere else. Do not self-host SF Pro: its
+     license only allows use in mock-ups and apps for Apple platforms. */
+  --font-text: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter",
+    "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter",
+    "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
+  --font-rounded: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont,
+    system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* iOS text styles (size / line-height). Apps use these. */
+  --text-large-title: 2.125rem;   /* 34px / 41 bold   */
+  --text-title1: 1.75rem;         /* 28px / 34 bold   */
+  --text-title2: 1.375rem;        /* 22px / 28 bold   */
+  --text-title3: 1.25rem;         /* 20px / 25 semibold */
+  --text-headline: 1.0625rem;     /* 17px / 22 semibold */
+  --text-body: 1.0625rem;         /* 17px / 22 regular */
+  --text-callout: 1rem;           /* 16px / 21 */
+  --text-subheadline: 0.9375rem;  /* 15px / 20 */
+  --text-footnote: 0.8125rem;     /* 13px / 18 */
+  --text-caption1: 0.75rem;       /* 12px / 16 */
+  --text-caption2: 0.6875rem;     /* 11px / 13 */
+
+  /* Marketing / web display scale (apple.com-like). Fluid. */
+  --text-hero: clamp(2.75rem, 1.6rem + 4.6vw, 5rem);       /* 44 → 80 */
+  --text-display: clamp(2.25rem, 1.5rem + 3vw, 3.5rem);    /* 36 → 56 */
+  --text-section: clamp(1.75rem, 1.3rem + 1.8vw, 2.5rem);  /* 28 → 40 */
+  --text-lead: clamp(1.1875rem, 1.05rem + 0.55vw, 1.5rem); /* 19 → 24 */
+
+  /* Tracking: Apple tightens large type and slightly loosens tiny type. */
+  --tracking-hero: -0.025em;
+  --tracking-display: -0.02em;
+  --tracking-title: -0.012em;
+  --tracking-body: -0.006em;   /* ≈ SF Pro Text at 17px */
+  --tracking-caption: 0.004em;
+
+  --leading-tight: 1.07;
+  --leading-title: 1.15;
+  --leading-body: 1.47;
+
+  /* ---- Spacing (4pt grid) ---------------------------------------------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-30: 120px;
+  --section-pad: clamp(64px, 8vw + 24px, 140px);
+  --gutter: clamp(16px, 4vw, 32px);
+  --content-max: 980px;      /* apple.com reading width */
+  --content-wide: 1200px;
+  --touch-min: 44px;         /* minimum hit target */
+
+  /* ---- Radii (keep corners concentric: inner = outer − padding) -------- */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;     /* buttons, fields, inset-grouped lists */
+  --radius-lg: 18px;     /* cards */
+  --radius-xl: 28px;     /* hero tiles, large panels, sheets */
+  --radius-pill: 980px;  /* capsules */
+
+  /* ---- Motion ---------------------------------------------------------- */
+  --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);      /* iOS sheet/drawer */
+  /* Spring approximations (critically-damped, slight overshoot). */
+  --spring-smooth: linear(0, 0.157, 0.438, 0.66, 0.808, 0.897, 0.947, 0.974, 0.988, 0.995, 1);
+  --spring-snappy: linear(0, 0.245, 0.621, 0.885, 1.02, 1.062, 1.054, 1.031, 1.012, 1.001, 0.997, 1);
+  --dur-fast: 160ms;
+  --dur-base: 260ms;
+  --dur-slow: 420ms;
+
+  /* ---- Light palette (iOS semantic colors) ----------------------------- */
+  --blue: #007aff;
+  --green: #34c759;
+  --indigo: #5856d6;
+  --orange: #ff9500;
+  --pink: #ff2d55;
+  --purple: #af52de;
+  --red: #ff3b30;
+  --teal: #30b0c7;
+  --mint: #00c7be;
+  --cyan: #32ade6;
+  --yellow: #ffcc00;
+  --brown: #a2845e;
+
+  --gray: #8e8e93;
+  --gray2: #aeaeb2;
+  --gray3: #c7c7cc;
+  --gray4: #d1d1d6;
+  --gray5: #e5e5ea;
+  --gray6: #f2f2f7;
+
+  /* Accent: one per product. Override this single variable to rebrand. */
+  --accent: var(--blue);
+  --accent-text: #0066cc;            /* AA-safe blue for text links on white */
+  --accent-tint: rgb(0 122 255 / 0.12);
+  --on-accent: #ffffff;
+
+  --label: #1d1d1f;                  /* apple.com near-black; iOS uses #000 */
+  --label-secondary: rgb(60 60 67 / 0.72);
+  --label-tertiary: rgb(60 60 67 / 0.45);
+  --label-quaternary: rgb(60 60 67 / 0.22);
+
+  --bg: #ffffff;                     /* systemBackground */
+  --bg-secondary: #f5f5f7;           /* page tint, alternating sections */
+  --bg-tertiary: #ffffff;
+  --bg-grouped: #f2f2f7;             /* behind inset-grouped lists */
+  --bg-grouped-secondary: #ffffff;   /* the list "cards" themselves */
+  --bg-elevated: #ffffff;            /* sheets, popovers, menus */
+
+  --fill: rgb(120 120 128 / 0.2);
+  --fill-secondary: rgb(120 120 128 / 0.16);
+  --fill-tertiary: rgb(118 118 128 / 0.12);
+  --fill-quaternary: rgb(116 116 128 / 0.08);
+
+  --separator: rgb(60 60 67 / 0.18);
+  --separator-opaque: #d2d2d7;
+
+  /* Materials (translucent chrome: nav bars, toolbars, menus, sheets). */
+  --material-thick: rgb(255 255 255 / 0.86);
+  --material-regular: rgb(255 255 255 / 0.72);
+  --material-thin: rgb(255 255 255 / 0.56);
+  --material-blur: saturate(180%) blur(20px);
+  --glass-edge: rgb(255 255 255 / 0.6);   /* specular rim on Liquid Glass */
+
+  /* Shadows: soft, neutral, layered. Never colored, never hard. */
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.04), 0 1px 1px rgb(0 0 0 / 0.02);
+  --shadow-2: 0 2px 6px rgb(0 0 0 / 0.04), 0 8px 24px rgb(0 0 0 / 0.06);
+  --shadow-3: 0 4px 12px rgb(0 0 0 / 0.06), 0 24px 64px rgb(0 0 0 / 0.12);
+  --shadow-control: 0 3px 8px rgb(0 0 0 / 0.12), 0 3px 1px rgb(0 0 0 / 0.04);
+
+  --focus-ring: 0 0 0 4px rgb(0 122 255 / 0.32);
+}
+
+/* ---- Dark palette ------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --blue: #0a84ff; --green: #30d158; --indigo: #5e5ce6; --orange: #ff9f0a;
+    --pink: #ff375f; --purple: #bf5af2; --red: #ff453a; --teal: #40c8e0;
+    --mint: #63e6e2; --cyan: #64d2ff; --yellow: #ffd60a; --brown: #ac8e68;
+    --gray: #8e8e93; --gray2: #636366; --gray3: #48484a; --gray4: #3a3a3c;
+    --gray5: #2c2c2e; --gray6: #1c1c1e;
+    --accent-text: #2997ff;
+    --accent-tint: rgb(10 132 255 / 0.2);
+    --label: #f5f5f7;
+    --label-secondary: rgb(235 235 245 / 0.64);
+    --label-tertiary: rgb(235 235 245 / 0.38);
+    --label-quaternary: rgb(235 235 245 / 0.18);
+    --bg: #000000; --bg-secondary: #1c1c1e; --bg-tertiary: #2c2c2e;
+    --bg-grouped: #000000; --bg-grouped-secondary: #1c1c1e; --bg-elevated: #1c1c1e;
+    --fill: rgb(120 120 128 / 0.36); --fill-secondary: rgb(120 120 128 / 0.32);
+    --fill-tertiary: rgb(118 118 128 / 0.24); --fill-quaternary: rgb(116 116 128 / 0.18);
+    --separator: rgb(84 84 88 / 0.6); --separator-opaque: #38383a;
+    --material-thick: rgb(28 28 30 / 0.88); --material-regular: rgb(28 28 30 / 0.72);
+    --material-thin: rgb(28 28 30 / 0.56); --glass-edge: rgb(255 255 255 / 0.16);
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-2: 0 8px 24px rgb(0 0 0 / 0.45);
+    --shadow-3: 0 24px 64px rgb(0 0 0 / 0.6);
+    --focus-ring: 0 0 0 4px rgb(10 132 255 / 0.45);
+  }
+}
+:root[data-theme="dark"] {
+  --blue: #0a84ff; --green: #30d158; --indigo: #5e5ce6; --orange: #ff9f0a;
+  --pink: #ff375f; --purple: #bf5af2; --red: #ff453a; --teal: #40c8e0;
+  --mint: #63e6e2; --cyan: #64d2ff; --yellow: #ffd60a; --brown: #ac8e68;
+  --gray: #8e8e93; --gray2: #636366; --gray3: #48484a; --gray4: #3a3a3c;
+  --gray5: #2c2c2e; --gray6: #1c1c1e;
+  --accent-text: #2997ff;
+  --accent-tint: rgb(10 132 255 / 0.2);
+  --label: #f5f5f7;
+  --label-secondary: rgb(235 235 245 / 0.64);
+  --label-tertiary: rgb(235 235 245 / 0.38);
+  --label-quaternary: rgb(235 235 245 / 0.18);
+  --bg: #000000; --bg-secondary: #1c1c1e; --bg-tertiary: #2c2c2e;
+  --bg-grouped: #000000; --bg-grouped-secondary: #1c1c1e; --bg-elevated: #1c1c1e;
+  --fill: rgb(120 120 128 / 0.36); --fill-secondary: rgb(120 120 128 / 0.32);
+  --fill-tertiary: rgb(118 118 128 / 0.24); --fill-quaternary: rgb(116 116 128 / 0.18);
+  --separator: rgb(84 84 88 / 0.6); --separator-opaque: #38383a;
+  --material-thick: rgb(28 28 30 / 0.88); --material-regular: rgb(28 28 30 / 0.72);
+  --material-thin: rgb(28 28 30 / 0.56); --glass-edge: rgb(255 255 255 / 0.16);
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 8px 24px rgb(0 0 0 / 0.45);
+  --shadow-3: 0 24px 64px rgb(0 0 0 / 0.6);
+  --focus-ring: 0 0 0 4px rgb(10 132 255 / 0.45);
+}
+
+/* ---- Base --------------------------------------------------------------- */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--label);
+  font-family: var(--font-text);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern";
+}
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: var(--leading-title);
+  letter-spacing: var(--tracking-title);
+  text-wrap: balance;
+  margin: 0;
+}
+p { text-wrap: pretty; }
+a { color: var(--accent-text); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 0.18em; }
+:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: var(--radius-sm); }
+::selection { background: var(--accent-tint); }
+
+/* Continuous ("squircle") corners where the browser supports them. */
+@supports (corner-shape: squircle) {
+  .squircle, .card, .btn, .field, .list { corner-shape: squircle; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root { --material-blur: none; }
+  :root:not([data-theme="dark"]) { --material-regular: #f5f5f7; --material-thick: #f5f5f7; --material-thin: #f5f5f7; }
+}
+
+
+/* ==========================================================================
+   FlowMetrics: app layout (macOS / iPadOS style)
+   ========================================================================== */
+* { box-sizing: border-box; }
+body { background: var(--bg-grouped); min-height: 100dvh; }
+button { font: inherit; color: inherit; }
+svg.icon { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor;
+  stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Sidebar */
+.sidebar {
+  position: fixed; inset: 0 auto 0 0; width: 240px;
+  padding: var(--space-4) var(--space-3);
+  background: var(--bg-secondary);
+  border-right: 0.5px solid var(--separator);
+}
+.logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: var(--space-2) var(--space-3) var(--space-6);
+  font: 600 var(--text-headline)/1.2 var(--font-display); letter-spacing: -0.015em;
+}
+.logo__mark {
+  width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center;
+  background: var(--accent); color: var(--on-accent);
+}
+.logo__mark svg { width: 16px; height: 16px; stroke-width: 2; }
+.nav { display: grid; gap: 2px; }
+.nav a {
+  display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 var(--space-3);
+  border-radius: var(--radius-sm); color: var(--label); font-size: 0.875rem;
+  transition: background-color var(--dur-fast) var(--ease-standard);
+}
+.nav a svg { color: var(--accent); }
+.nav a:hover { background: var(--fill-quaternary); text-decoration: none; }
+.nav a.active { background: var(--fill-secondary); font-weight: 600; }
+
+/* Main column */
+.main { margin-left: 240px; min-width: 0; }
+.topbar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; justify-content: space-between; align-items: center; gap: var(--space-4);
+  height: 52px; padding: 0 var(--space-8);
+  background: var(--material-regular);
+  -webkit-backdrop-filter: var(--material-blur); backdrop-filter: var(--material-blur);
+  box-shadow: 0 0.5px 0 transparent;
+  transition: box-shadow var(--dur-base) var(--ease-standard);
+}
+.topbar[data-scrolled="true"] { box-shadow: 0 0.5px 0 var(--separator); }
+.topbar__title { font-size: var(--text-subheadline); font-weight: 600; color: var(--label); }
+.content { max-width: 1200px; padding: var(--space-6) var(--space-8) var(--space-16); }
+.page-head { margin-bottom: var(--space-6); }
+h1 { font-size: var(--text-large-title); font-weight: 700; letter-spacing: var(--tracking-display); line-height: 1.2; }
+.page-head p { margin: var(--space-1) 0 0; color: var(--label-secondary); font-size: var(--text-subheadline); }
+
+/* Buttons */
+.btn {
+  --h: 32px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: var(--h); padding: 0 14px; border: 0; border-radius: var(--radius-sm);
+  background: var(--accent); color: var(--on-accent);
+  font: 600 0.875rem/1 var(--font-text); letter-spacing: var(--tracking-body);
+  cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent;
+  transition: transform var(--dur-fast) var(--spring-snappy), background-color var(--dur-fast) var(--ease-standard);
+}
+.btn:hover { background: color-mix(in srgb, var(--accent) 88%, black); }
+.btn:active { transform: scale(0.97); }
+.btn svg { width: 15px; height: 15px; stroke-width: 2; }
+
+/* Cards */
+.card { background: var(--bg-grouped-secondary); border-radius: var(--radius-lg); padding: var(--space-5); min-width: 0; }
+.card__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-4); flex-wrap: wrap; }
+h3 { font-size: var(--text-headline); font-weight: 600; letter-spacing: -0.01em; }
+.card__sub { font-size: var(--text-footnote); color: var(--label-secondary); margin-top: 2px; }
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); margin-bottom: var(--space-4); }
+.stat-label { font-size: var(--text-footnote); font-weight: 600; color: var(--label-secondary); }
+.stat-value {
+  font: 600 var(--text-title1)/1.15 var(--font-display); letter-spacing: var(--tracking-display);
+  font-variant-numeric: tabular-nums; margin: var(--space-1) 0 var(--space-1);
+}
+.delta { font-size: var(--text-footnote); color: var(--label-secondary); font-variant-numeric: tabular-nums; }
+.delta b { font-weight: 600; }
+.up b { color: var(--green); }
+.down b { color: var(--red); }
+
+/* Grid */
+.grid2 { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: var(--space-4); margin-bottom: var(--space-4); }
+
+/* Segmented control (range tabs) */
+.tabs {
+  display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+  padding: 2px; gap: 2px; border-radius: 9px; background: var(--fill-tertiary);
+}
+.tab {
+  height: 28px; padding: 0 16px; border: 0; border-radius: 7px;
+  background: transparent; color: var(--label);
+  font-size: var(--text-footnote); font-weight: 400; cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-standard), box-shadow var(--dur-fast) var(--ease-standard);
+}
+.tab:hover:not(.active) { background: var(--fill-quaternary); }
+.tab.active { background: var(--bg-elevated); box-shadow: var(--shadow-control); font-weight: 600; }
+:root[data-theme="dark"] .tab.active { background: #636366; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tab.active { background: #636366; } }
+
+/* Chart */
+.bars {
+  display: flex; align-items: flex-end; gap: 8px; height: 200px;
+  padding-top: var(--space-2);
+  background: repeating-linear-gradient(to top, var(--separator) 0 0.5px, transparent 0.5px 25%);
+  border-bottom: 0.5px solid var(--separator-opaque);
+}
+.bar {
+  flex: 1; min-width: 0; max-width: 48px; margin: 0 auto;
+  border-radius: 6px 6px 2px 2px; background: var(--accent);
+  transform-origin: bottom; animation: grow var(--dur-slow) var(--spring-smooth) both;
+  transition: opacity var(--dur-fast) var(--ease-standard);
+}
+.bar:hover { opacity: 0.75; }
+@keyframes grow { from { transform: scaleY(0); } }
+
+/* Quick settings: inset-grouped rows */
+.toggle-row {
+  position: relative; display: flex; justify-content: space-between; align-items: center; gap: var(--space-3);
+  min-height: 48px; font-size: var(--text-subheadline);
+}
+.toggle-row + .toggle-row { border-top: 0.5px solid var(--separator); }
+.toggle {
+  position: relative; flex: none; width: 51px; height: 31px; border-radius: 999px;
+  background: var(--fill); cursor: pointer;
+  transition: background-color var(--dur-base) var(--ease-standard);
+  -webkit-tap-highlight-color: transparent;
+}
+.toggle.on { background: var(--green); }
+.toggle::after {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 50%;
+  background: #fff; box-shadow: 0 3px 8px rgb(0 0 0 / 0.15), 0 3px 1px rgb(0 0 0 / 0.06);
+  transition: transform var(--dur-base) var(--spring-snappy), width var(--dur-fast) var(--ease-standard);
+}
+.toggle.on::after { transform: translateX(20px); }
+.toggle:active::after { width: 33px; }
+.toggle.on:active::after { transform: translateX(14px); }
+.toggle:focus-visible { box-shadow: var(--focus-ring); border-radius: 999px; }
+
+/* Transactions table */
+.table-wrap { overflow-x: auto; margin: 0 calc(var(--space-5) * -1) calc(var(--space-2) * -1); }
+table { width: 100%; border-collapse: collapse; font-size: var(--text-subheadline); font-variant-numeric: tabular-nums; }
+th {
+  text-align: left; font-weight: 400; font-size: var(--text-footnote); color: var(--label-secondary);
+  padding: 8px var(--space-5); border-bottom: 0.5px solid var(--separator); white-space: nowrap;
+}
+td { padding: 12px var(--space-5); border-bottom: 0.5px solid var(--separator); white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr { transition: background-color var(--dur-fast) var(--ease-standard); }
+tbody tr:hover { background: var(--fill-quaternary); }
+td:first-child { font-weight: 600; }
+td:nth-child(2) { color: var(--label-secondary); }
+.num { text-align: right; }
+
+/* Status badges: system color as text on a tint */
+.pill {
+  display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px;
+  border-radius: var(--radius-pill); font-size: var(--text-caption1); font-weight: 600;
+  color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent);
+}
+.pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.ok { --c: var(--green); }
+.pending { --c: var(--orange); }
+.failed { --c: var(--red); }
+:root:not([data-theme="dark"]) .ok { color: color-mix(in srgb, var(--green) 70%, black); }
+:root:not([data-theme="dark"]) .pending { color: color-mix(in srgb, var(--orange) 72%, black); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ok { color: var(--green); }
+  :root:not([data-theme="light"]) .pending { color: var(--orange); }
+}
+
+/* Responsive */
+@media (max-width: 1100px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .grid2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .topbar { padding: 0 var(--space-4); }
+  .content { padding: var(--space-4) var(--space-4) var(--space-12); }
+  h1 { font-size: var(--text-title1); }
+  .stats { gap: var(--space-3); }
+  .card { padding: var(--space-4); }
+  .table-wrap { margin: 0 calc(var(--space-4) * -1) calc(var(--space-2) * -1); }
+  th, td { padding-left: var(--space-4); padding-right: var(--space-4); }
+}
+</style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">
+      <span class="logo__mark" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M3 17l5-5 4 4 8-8"/><path d="M15 8h5v5"/></svg></span>
+      FlowMetrics
+    </div>
+    <nav class="nav" aria-label="Main">
+      <a href="#" class="active" aria-current="page"><svg class="icon" viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Dashboard</a>
+      <a href="#"><svg class="icon" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analytics</a>
+      <a href="#"><svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.5A6.5 6.5 0 0 1 21.5 20"/></svg>Customers</a>
+      <a href="#"><svg class="icon" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h3"/></svg>Billing</a>
+      <a href="#"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Settings</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="topbar" data-scrolled="false">
+      <span class="topbar__title">Dashboard</span>
+      <button class="btn" id="exportBtn"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 19h16"/></svg>Export report</button>
+    </div>
+
+    <div class="content">
+      <header class="page-head">
+        <h1>Welcome back, Sarah</h1>
+        <p>Here’s how FlowMetrics is doing this month.</p>
+      </header>
+
+      <section class="stats" aria-label="Key metrics">
+        <div class="card"><div class="stat-label">Revenue</div><div class="stat-value">$48,290</div><div class="delta up"><b>▲ 12.4%</b> vs last month</div></div>
+        <div class="card"><div class="stat-label">Active users</div><div class="stat-value">3,842</div><div class="delta up"><b>▲ 8.1%</b> vs last month</div></div>
+        <div class="card"><div class="stat-label">Orders</div><div class="stat-value">1,209</div><div class="delta down"><b>▼ 2.3%</b> vs last month</div></div>
+        <div class="card"><div class="stat-label">Avg rating</div><div class="stat-value">4.8</div><div class="delta up"><b>▲ 0.2</b> vs last month</div></div>
+      </section>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="card__head">
+            <div><h3>Activity</h3><div class="card__sub" id="rangeLabel">Last 7 days</div></div>
+            <div class="tabs" id="rangeTabs" role="tablist" aria-label="Range">
+              <button class="tab active" data-range="week" role="tab" aria-selected="true">Week</button>
+              <button class="tab" data-range="month" role="tab" aria-selected="false">Month</button>
+              <button class="tab" data-range="year" role="tab" aria-selected="false">Year</button>
+            </div>
+          </div>
+          <div class="bars" id="chart" role="img" aria-label="Activity chart"></div>
+        </div>
+        <div class="card">
+          <div class="card__head" style="margin-bottom: var(--space-1)"><h3>Quick settings</h3></div>
+          <div class="toggle-row"><span id="lbl-email">Email alerts</span><div class="toggle on" data-setting="email" role="switch" tabindex="0" aria-checked="true" aria-labelledby="lbl-email"></div></div>
+          <div class="toggle-row"><span id="lbl-digest">Weekly digest</span><div class="toggle" data-setting="digest" role="switch" tabindex="0" aria-checked="false" aria-labelledby="lbl-digest"></div></div>
+          <div class="toggle-row"><span id="lbl-beta">Dark launch features</span><div class="toggle on" data-setting="beta" role="switch" tabindex="0" aria-checked="true" aria-labelledby="lbl-beta"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__head"><h3>Recent transactions</h3></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Customer</th><th>Date</th><th class="num">Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Acme Corp</td><td>Nov 6</td><td class="num">$2,400.00</td><td><span class="pill ok">Paid</span></td></tr>
+              <tr><td>Globex</td><td>Nov 5</td><td class="num">$860.50</td><td><span class="pill pending">Pending</span></td></tr>
+              <tr><td>Initech</td><td>Nov 5</td><td class="num">$1,120.00</td><td><span class="pill ok">Paid</span></td></tr>
+              <tr><td>Umbrella</td><td>Nov 4</td><td class="num">$310.00</td><td><span class="pill failed">Failed</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<script>
+  const data = {
+    week: [40, 65, 52, 80, 74, 90, 60],
+    month: [55, 62, 70, 58, 85, 77, 92, 68, 74, 81, 66, 88],
+    year: [30, 45, 50, 62, 58, 70, 76, 82, 79, 88, 92, 95]
+  };
+  const labels = { week: 'Last 7 days', month: 'Last 12 weeks', year: 'Last 12 months' };
+  const chart = document.getElementById('chart');
+  function render(range) {
+    chart.innerHTML = '';
+    data[range].forEach((v, i) => {
+      const b = document.createElement('div');
+      b.className = 'bar'; b.style.height = v + '%'; b.style.animationDelay = (i * 18) + 'ms'; b.title = v;
+      chart.appendChild(b);
+    });
+    document.getElementById('rangeLabel').textContent = labels[range];
+  }
+  document.querySelectorAll('#rangeTabs .tab').forEach(t => t.addEventListener('click', () => {
+    document.querySelectorAll('#rangeTabs .tab').forEach(x => { x.classList.remove('active'); x.setAttribute('aria-selected', 'false'); });
+    t.classList.add('active'); t.setAttribute('aria-selected', 'true'); render(t.dataset.range);
+  }));
+  document.querySelectorAll('.toggle').forEach(t => {
+    const flip = () => t.setAttribute('aria-checked', t.classList.toggle('on'));
+    t.addEventListener('click', flip);
+    t.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flip(); } });
+  });
+  document.getElementById('exportBtn').addEventListener('click', () => alert('Report exported!'));
+  const topbar = document.querySelector('.topbar');
+  addEventListener('scroll', () => topbar.dataset.scrolled = scrollY > 4, { passive: true });
+  render('week');
+</script>
+</body>
+</html>
